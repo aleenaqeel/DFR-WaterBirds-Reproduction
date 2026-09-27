@@ -1,0 +1,16 @@
+# Dataset (re-downloaded fresh each Colab session, not needed in the repo)
+waterbirds_data/
+data/
+
+# Model checkpoints and result files (kept in Google Drive instead -- too large / too many for git)
+checkpoints/
+*.pt
+*.pth
+*.pkl
+
+# Python
+__pycache__/
+*.pyc
+
+# Colab / Jupyter
+.ipynb_checkpoints/
