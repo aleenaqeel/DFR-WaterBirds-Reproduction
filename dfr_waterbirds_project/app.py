@@ -88,7 +88,7 @@ with tab1:
     if img_to_infer is not None:
         col1, col2 = st.columns([1, 1])
         with col1:
-            st.image(img_to_infer, caption="Input Image", use_column_width=True)
+            st.image(img_to_infer, caption="Input Image", use_container_width=True)
             st.write(f"**True Label:** {true_label_display}")
             st.write(f"**True Group:** {group_display}")
             
@@ -101,10 +101,26 @@ with tab1:
                 erm_class = p_erm.argmax().item()
                 erm_conf = p_erm[erm_class].item()
                 
-                z = ((f - dfr_head["scaler_mean"]) / dfr_head["scaler_scale"]) @ dfr_head["coef"] + dfr_head["intercept"]
-                p_dfr_val = torch.sigmoid(z)[0].item()
-                dfr_class = 1 if p_dfr_val > 0.5 else 0
-                dfr_conf = p_dfr_val if dfr_class == 1 else (1 - p_dfr_val)
+                
+                mean = dfr_head["scaler_mean"]
+                scale = dfr_head["scaler_scale"]
+                coef = dfr_head["coef"]
+                intercept = dfr_head["intercept"]
+                
+                f_norm = (f - mean) / scale
+                z = f_norm @ coef + intercept
+                if z.ndim > 1:
+                    z = z.squeeze()
+                    
+                if z.numel() == 1:
+                    z = -z
+                    p_dfr_val = torch.sigmoid(z).item()
+                    dfr_class = 1 if p_dfr_val > 0.5 else 0
+                    dfr_conf = p_dfr_val if dfr_class == 1 else (1 - p_dfr_val)
+                else:
+                    p_dfr = torch.softmax(z, dim=0)
+                    dfr_class = p_dfr.argmax().item()
+                    dfr_conf = p_dfr[dfr_class].item()
 
             class_names = ["Landbird", "Waterbird"]
             st.markdown(f"### ERM Baseline: **{class_names[erm_class]}** ({erm_conf*100:.1f}% confidence)")
