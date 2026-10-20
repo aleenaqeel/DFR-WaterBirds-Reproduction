@@ -21,7 +21,7 @@ transform = transforms.Compose([
     transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
 ])
 
-# Load test sample
+
 img_path = "artifacts/demo_images/slice_sample_1.jpg"
 if not os.path.exists(img_path):
     print(f"Error: Image not found at {img_path}")
@@ -31,7 +31,7 @@ img = Image.open(img_path).convert("RGB")
 tensor_img = transform(img).unsqueeze(0)
 
 with torch.no_grad():
-    # Feature extraction matching app.py
+    
     x = model.conv1(tensor_img)
     x = model.bn1(x)
     x = model.relu(x)
@@ -43,7 +43,7 @@ with torch.no_grad():
     x = model.avgpool(x)
     f = torch.flatten(x, 1)
     
-    # DFR Math with logit sign correction
+   
     mean = dfr_head["scaler_mean"]
     scale = dfr_head["scaler_scale"]
     coef = dfr_head["coef"]
@@ -51,7 +51,6 @@ with torch.no_grad():
     
     f_norm = (f - mean) / scale
     z = f_norm @ coef + intercept
-    z = -z  # Logit sign correction
     
     p_dfr_val = torch.sigmoid(z).item()
     dfr_class = 1 if p_dfr_val > 0.5 else 0

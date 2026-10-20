@@ -113,7 +113,6 @@ with tab1:
                     z = z.squeeze()
                     
                 if z.numel() == 1:
-                    z = -z
                     p_dfr_val = torch.sigmoid(z).item()
                     dfr_class = 1 if p_dfr_val > 0.5 else 0
                     dfr_conf = p_dfr_val if dfr_class == 1 else (1 - p_dfr_val)

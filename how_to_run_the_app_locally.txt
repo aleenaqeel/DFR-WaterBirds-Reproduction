@@ -1,0 +1,7 @@
+1. clone the repo
+
+2. run pip install -r dfr_waterbirds_project/requirements.txt
+
+3. cd dfr_waterbirds_project
+
+4. type streamlit run app.py in the terminal
